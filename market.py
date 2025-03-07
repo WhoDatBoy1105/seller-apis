@@ -11,6 +11,14 @@ logger = logging.getLogger(__file__)
 
 
 def get_product_list(page, campaign_id, access_token):
+    """Получить список товаров магазина Яндекс.Маркет
+
+    По запросу к API Яндекс.Маркет создаст JSON файл всех необходимых товаров.
+
+    Args:
+        result: JSON файл с товаром
+    """
+
     endpoint_url = "https://api.partner.market.yandex.ru/"
     headers = {
         "Content-Type": "application/json",
@@ -30,6 +38,11 @@ def get_product_list(page, campaign_id, access_token):
 
 
 def update_stocks(stocks, campaign_id, access_token):
+    """Создать акцию на товары
+
+    Наполним файл с акционными товарами продавцов
+    """
+
     endpoint_url = "https://api.partner.market.yandex.ru/"
     headers = {
         "Content-Type": "application/json",
@@ -46,6 +59,15 @@ def update_stocks(stocks, campaign_id, access_token):
 
 
 def update_price(prices, campaign_id, access_token):
+    """Обновить цены товаров
+
+    Имея список товара мы можем получить его текущую цену
+
+    Args:
+        prices: цена товара
+
+    """
+
     endpoint_url = "https://api.partner.market.yandex.ru/"
     headers = {
         "Content-Type": "application/json",
@@ -62,7 +84,15 @@ def update_price(prices, campaign_id, access_token):
 
 
 def get_offer_ids(campaign_id, market_token):
-    """Получить артикулы товаров Яндекс маркета"""
+    """Получить артикулы товаров Яндекс маркета
+
+    Имея список товара мы можем получить его артикул на Яндекс.Маркете
+
+    Args:
+        product_list: список товаров
+        offer_id: артикул товаров
+        offer_ids: список названия товара и его артикула
+    """
     page = ""
     product_list = []
     while True:
@@ -78,6 +108,15 @@ def get_offer_ids(campaign_id, market_token):
 
 
 def create_stocks(watch_remnants, offer_ids, warehouse_id):
+    """Создает остатки
+
+    Через запрос к API Яндекс.Маркет получим остаток товара
+
+    Args:
+        stocks: остаток товара
+
+    """
+
     # Уберем то, что не загружено в market
     stocks = list()
     date = str(datetime.datetime.utcnow().replace(microsecond=0).isoformat() + "Z")
@@ -123,6 +162,15 @@ def create_stocks(watch_remnants, offer_ids, warehouse_id):
 
 
 def create_prices(watch_remnants, offer_ids):
+    """Укажем цену на часы
+
+    Добавим в файл со списком часов цену на него
+
+    Args:
+        price: список цен на часы
+
+    """
+
     prices = []
     for watch in watch_remnants:
         if str(watch.get("Код")) in offer_ids:
