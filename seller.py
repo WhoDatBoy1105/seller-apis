@@ -12,7 +12,14 @@ logger = logging.getLogger(__file__)
 
 
 def get_product_list(last_id, client_id, seller_token):
-    """Получить список товаров магазина озон"""
+    """Получить список товаров магазина озон
+
+    По запросу к API Озона создаст JSON файл всех необходимых товаров.
+
+    Args:
+        result: JSON файл с товаром
+    """
+
     url = "https://api-seller.ozon.ru/v2/product/list"
     headers = {
         "Client-Id": client_id,
@@ -32,7 +39,16 @@ def get_product_list(last_id, client_id, seller_token):
 
 
 def get_offer_ids(client_id, seller_token):
-    """Получить артикулы товаров магазина озон"""
+    """Получить артикулы товаров магазина озон
+
+    Имея список товара мы можем получить его артикул на ОЗОН
+
+    Args:
+        product_list: список товаров
+        offer_id: артикул товаров
+        offer_ids: список названия товара и его артикула
+    """
+
     last_id = ""
     product_list = []
     while True:
@@ -49,7 +65,15 @@ def get_offer_ids(client_id, seller_token):
 
 
 def update_price(prices: list, client_id, seller_token):
-    """Обновить цены товаров"""
+    """Обновить цены товаров
+
+    Имея список товара мы можем получить его текущую цену
+
+    Args:
+        prices: цена товара
+
+    """
+
     url = "https://api-seller.ozon.ru/v1/product/import/prices"
     headers = {
         "Client-Id": client_id,
@@ -62,7 +86,15 @@ def update_price(prices: list, client_id, seller_token):
 
 
 def update_stocks(stocks: list, client_id, seller_token):
-    """Обновить остатки"""
+    """Обновить остатки
+
+    Через запрос к API Озон получим остаток товара
+
+    Args:
+        stocks: остаток товара
+
+    """
+
     url = "https://api-seller.ozon.ru/v1/product/import/stocks"
     headers = {
         "Client-Id": client_id,
@@ -75,7 +107,16 @@ def update_stocks(stocks: list, client_id, seller_token):
 
 
 def download_stock():
-    """Скачать файл ostatki с сайта casio"""
+    """Скачать файл ostatki с сайта casio
+
+    Получим файл остатков в формате Excel
+
+    Args:
+        excel_file: файл Excel с остатками
+        watch_remnants: остатки часов
+
+    """
+
     # Скачать остатки с сайта
     casio_url = "https://timeworld.ru/upload/files/ostatki.zip"
     session = requests.Session()
@@ -96,6 +137,15 @@ def download_stock():
 
 
 def create_stocks(watch_remnants, offer_ids):
+    """Создать акцию на часы
+
+    Наполним файл с акционными товарами
+
+    Args:
+        stocks: файл с акционным товаром
+
+    """
+
     # Уберем то, что не загружено в seller
     stocks = []
     for watch in watch_remnants:
@@ -116,6 +166,14 @@ def create_stocks(watch_remnants, offer_ids):
 
 
 def create_prices(watch_remnants, offer_ids):
+    """Укажем цену на часы
+
+    Добавим в файл со списком часов цену на него
+
+    Args:
+        price: список цен на часы
+
+    """
     prices = []
     for watch in watch_remnants:
         if str(watch.get("Код")) in offer_ids:
@@ -131,7 +189,17 @@ def create_prices(watch_remnants, offer_ids):
 
 
 def price_conversion(price: str) -> str:
-    """Преобразовать цену. Пример: 5'990.00 руб. -> 5990"""
+    """Конверсия цены
+
+    Преобразовывает цену на товар в целое число без разделения на разряды.
+
+    Args:
+        price: цена на товар
+
+    Returns:
+        5'990.00 руб. -> 5990
+    """
+
     return re.sub("[^0-9]", "", price.split(".")[0])
 
 
