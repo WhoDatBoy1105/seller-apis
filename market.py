@@ -16,7 +16,11 @@ def get_product_list(page, campaign_id, access_token):
     По запросу к API Яндекс.Маркет создаст JSON файл всех необходимых товаров.
 
     Args:
-        result: JSON файл с товаром
+        page (str): страница магазина
+        campaign_id (str): id компании
+        access_token (str): токен авторизации Яндекс.Маркет
+    Returns:
+        result (dict): обработанный JSON файл с товаром Яндекс.Маркет
     """
 
     endpoint_url = "https://api.partner.market.yandex.ru/"
@@ -38,9 +42,16 @@ def get_product_list(page, campaign_id, access_token):
 
 
 def update_stocks(stocks, campaign_id, access_token):
-    """Создать акцию на товары
+    """Обновляет остатки товаров на Яндекс.Маркет.
 
-    Наполним файл с акционными товарами продавцов
+    Наполняет файл JSON с остатками товара продавцов Яндекс.Маркет.
+
+    Args:
+        stocks (list): список остатка товаров
+        campaign_id (str): id компании
+        access_token (str): токен авторизации Яндекс.Маркет
+    Returns:
+        response_object (dict): обработанный JSON файл с акционными товарами Яндекс.Маркет
     """
 
     endpoint_url = "https://api.partner.market.yandex.ru/"
@@ -59,13 +70,16 @@ def update_stocks(stocks, campaign_id, access_token):
 
 
 def update_price(prices, campaign_id, access_token):
-    """Обновить цены товаров
+    """Обновить цены товаров на Яндекс.Маркет.
 
-    Имея список товара мы можем получить его текущую цену
+    Функция отправляет запрос к API Яндекс.Маркета для получения его текущей стоимости.
 
     Args:
-        prices: цена товара
-
+        prices (list): цена на товар
+        campaign_id (str): id компании
+        access_token (str): токен авторизации Яндекс.Маркет
+    Returns:
+        response_object (dict): обработанный JSON файл с акционными товарами Яндекс.Маркет
     """
 
     endpoint_url = "https://api.partner.market.yandex.ru/"
@@ -84,14 +98,15 @@ def update_price(prices, campaign_id, access_token):
 
 
 def get_offer_ids(campaign_id, market_token):
-    """Получить артикулы товаров Яндекс маркета
+    """Получить артикулы товаров Яндекс маркета.
 
-    Имея список товара мы можем получить его артикул на Яндекс.Маркете
+    Функция отправляет запрос к API Яндекс.Маркета для получения его артикула.
 
     Args:
-        product_list: список товаров
-        offer_id: артикул товаров
-        offer_ids: список названия товара и его артикула
+        campaign_id (str): id компании
+        market_token (str): токен доступа Яндекс.Маркет
+    Returns:
+        offer_ids (list): список с артикулами товара Яндекс.Маркет
     """
     page = ""
     product_list = []
@@ -108,13 +123,16 @@ def get_offer_ids(campaign_id, market_token):
 
 
 def create_stocks(watch_remnants, offer_ids, warehouse_id):
-    """Создает остатки
+    """Создает остатки товара Яндекс маркета.
 
-    Через запрос к API Яндекс.Маркет получим остаток товара
+    Через запрос к API Яндекс.Маркет получим остаток товара.
 
     Args:
-        stocks: остаток товара
-
+        watch_remnants (list): список со словарями остатка
+        offer_ids (set): множество id товара
+        warehouse_id (str): id склада
+    Returns:
+        stocks (list): список остатка товара Яндекс.Маркет с указанием количества
     """
 
     # Уберем то, что не загружено в market
@@ -162,13 +180,15 @@ def create_stocks(watch_remnants, offer_ids, warehouse_id):
 
 
 def create_prices(watch_remnants, offer_ids):
-    """Укажем цену на часы
+    """Укажем цену на часы.
 
-    Добавим в файл со списком часов цену на него
+    Добавим в файл со списком часов цену на него.
 
     Args:
-        price: список цен на часы
-
+        watch_remnants (list): список со словарями остатка
+        offer_ids (set): множество id товара
+    Returns:
+        prices (list): список цен на оставшиеся товары Яндекс.Маркет
     """
 
     prices = []

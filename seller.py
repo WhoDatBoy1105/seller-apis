@@ -12,12 +12,17 @@ logger = logging.getLogger(__file__)
 
 
 def get_product_list(last_id, client_id, seller_token):
-    """Получить список товаров магазина озон
+    """Получить список товаров магазина Озон
 
-    По запросу к API Озона создаст JSON файл всех необходимых товаров.
+    По запросу к API Озон создаст JSON файл всех необходимых товаров.
 
     Args:
-        result: JSON файл с товаром
+        last_id (str): id последнего товара
+        client_id (str): id клиента
+        seller_token (str): токен доступа клиента к Озон
+
+    Returns:
+        result (dict): обработанный JSON файл с данными на товар Озон
     """
 
     url = "https://api-seller.ozon.ru/v2/product/list"
@@ -41,12 +46,15 @@ def get_product_list(last_id, client_id, seller_token):
 def get_offer_ids(client_id, seller_token):
     """Получить артикулы товаров магазина озон
 
-    Имея список товара мы можем получить его артикул на ОЗОН
+    Имея список товара мы можем получить его артикул на ОЗОН.
 
     Args:
-        product_list: список товаров
-        offer_id: артикул товаров
-        offer_ids: список названия товара и его артикула
+
+        client_id (str): id клиента
+        seller_token (str): токен доступа клиента к Озон
+
+    Returns:
+        offer_ids (list): список id товаров
     """
 
     last_id = ""
@@ -70,8 +78,12 @@ def update_price(prices: list, client_id, seller_token):
     Имея список товара мы можем получить его текущую цену
 
     Args:
-        prices: цена товара
+        prices: list : список с ценами на товар
+        client_id (str): id клиента
+        seller_token (str): токен доступа клиента к Озон
 
+    Returns:
+        response.json() (dict): обновит цены на товар
     """
 
     url = "https://api-seller.ozon.ru/v1/product/import/prices"
@@ -91,8 +103,12 @@ def update_stocks(stocks: list, client_id, seller_token):
     Через запрос к API Озон получим остаток товара
 
     Args:
-        stocks: остаток товара
+        stocks: list : список с остатками на товар
+        client_id (str): id клиента
+        seller_token (str): токен доступа клиента к Озон
 
+    Returns:
+        response.json() (dict): обновит остатки на товар
     """
 
     url = "https://api-seller.ozon.ru/v1/product/import/stocks"
@@ -111,9 +127,8 @@ def download_stock():
 
     Получим файл остатков в формате Excel
 
-    Args:
-        excel_file: файл Excel с остатками
-        watch_remnants: остатки часов
+    Returns:
+        watch_remnants (list): список со словарями на товар
 
     """
 
@@ -137,13 +152,16 @@ def download_stock():
 
 
 def create_stocks(watch_remnants, offer_ids):
-    """Создать акцию на часы
+    """Создать остатки товара
 
-    Наполним файл с акционными товарами
+    Наполним файл с остатками товара
 
     Args:
-        stocks: файл с акционным товаром
+        watch_remnants (list): список с остатками на товар
+        offer_ids (list): список id товаров
 
+    Returns:
+        stocks (dict): обновленный список с остатками на товар
     """
 
     # Уберем то, что не загружено в seller
@@ -171,8 +189,11 @@ def create_prices(watch_remnants, offer_ids):
     Добавим в файл со списком часов цену на него
 
     Args:
-        price: список цен на часы
+        watch_remnants (list): список с остатками на товар
+        offer_ids (list): список id товаров
 
+    Returns:
+        prices (dict): обновленный список с ценами на товар
     """
     prices = []
     for watch in watch_remnants:
@@ -194,7 +215,7 @@ def price_conversion(price: str) -> str:
     Преобразовывает цену на товар в целое число без разделения на разряды.
 
     Args:
-        price: цена на товар
+        price: str (dict): обновленный список с ценами на товар (только цифры, без указания разрядности)
 
     Returns:
         5'990.00 руб. -> 5990
