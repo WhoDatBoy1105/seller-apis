@@ -11,16 +11,21 @@ logger = logging.getLogger(__file__)
 
 
 def get_product_list(page, campaign_id, access_token):
-    """Получить список товаров магазина Яндекс.Маркет
+    """
+    Получить список товаров магазина Яндекс.Маркет.
 
-    По запросу к API Яндекс.Маркет создаст JSON файл всех необходимых товаров.
+    Выполняет запрос к API Яндекс.Маркет для получения списка товаров.
 
     Args:
-        page (str): страница магазина
-        campaign_id (str): id компании
-        access_token (str): токен авторизации Яндекс.Маркет
+        page (str): Токен страницы для пагинации.
+        campaign_id (str): Идентификатор кампании.
+        access_token (str): Токен авторизации для доступа к API.
+
     Returns:
-        result (dict): обработанный JSON файл с товаром Яндекс.Маркет
+        dict: Словарь с данными о товарах. Ключ 'result' содержит список товаров.
+
+    Raises:
+        requests.exceptions.HTTPError: Если произошла ошибка при запросе.
     """
 
     endpoint_url = "https://api.partner.market.yandex.ru/"
@@ -42,16 +47,21 @@ def get_product_list(page, campaign_id, access_token):
 
 
 def update_stocks(stocks, campaign_id, access_token):
-    """Обновляет остатки товаров на Яндекс.Маркет.
+    """
+    Обновляет остатки товаров на Яндекс.Маркет.
 
-    Наполняет файл JSON с остатками товара продавцов Яндекс.Маркет.
+    Отправляет запрос к API для обновления информации об остатках товаров.
 
     Args:
-        stocks (list): список остатка товаров
-        campaign_id (str): id компании
-        access_token (str): токен авторизации Яндекс.Маркет
+        stocks (list): Список словарей с информацией об остатках товаров.
+        campaign_id (str): Идентификатор кампании.
+        access_token (str): Токен авторизации для доступа к API.
+
     Returns:
-        response_object (dict): обработанный JSON файл с акционными товарами Яндекс.Маркет
+        dict: Ответ от API с результатами обновления.
+
+    Raises:
+        requests.exceptions.HTTPError: Если произошла ошибка при запросе.
     """
 
     endpoint_url = "https://api.partner.market.yandex.ru/"
@@ -70,16 +80,21 @@ def update_stocks(stocks, campaign_id, access_token):
 
 
 def update_price(prices, campaign_id, access_token):
-    """Обновить цены товаров на Яндекс.Маркет.
+    """
+    Обновляет цены товаров на Яндекс.Маркет.
 
-    Функция отправляет запрос к API Яндекс.Маркета для получения его текущей стоимости.
+    Отправляет запрос к API для обновления цен на товары.
 
     Args:
-        prices (list): цена на товар
-        campaign_id (str): id компании
-        access_token (str): токен авторизации Яндекс.Маркет
+        prices (list): Список словарей с информацией о ценах товаров.
+        campaign_id (str): Идентификатор кампании.
+        access_token (str): Токен авторизации для доступа к API.
+
     Returns:
-        response_object (dict): обработанный JSON файл с акционными товарами Яндекс.Маркет
+        dict: Ответ от API с результатами обновления.
+
+    Raises:
+        requests.exceptions.HTTPError: Если произошла ошибка при запросе.
     """
 
     endpoint_url = "https://api.partner.market.yandex.ru/"
@@ -98,15 +113,20 @@ def update_price(prices, campaign_id, access_token):
 
 
 def get_offer_ids(campaign_id, market_token):
-    """Получить артикулы товаров Яндекс маркета.
+    """
+    Получает список артикулов товаров Яндекс.Маркет.
 
-    Функция отправляет запрос к API Яндекс.Маркета для получения его артикула.
+    Выполняет запрос к API для получения артикулов товаров.
 
     Args:
-        campaign_id (str): id компании
-        market_token (str): токен доступа Яндекс.Маркет
+        campaign_id (str): Идентификатор кампании.
+        market_token (str): Токен доступа для работы с API.
+
     Returns:
-        offer_ids (list): список с артикулами товара Яндекс.Маркет
+        list: Список строк с артикулами товаров.
+
+    Raises:
+        requests.exceptions.HTTPError: Если произошла ошибка при запросе.
     """
     page = ""
     product_list = []
@@ -123,16 +143,22 @@ def get_offer_ids(campaign_id, market_token):
 
 
 def create_stocks(watch_remnants, offer_ids, warehouse_id):
-    """Создает остатки товара Яндекс маркета.
+    """
+    Создает список остатков товаров для Яндекс.Маркет.
 
-    Через запрос к API Яндекс.Маркет получим остаток товара.
+    Преобразует данные об остатках товаров в формат, подходящий для API.
 
     Args:
-        watch_remnants (list): список со словарями остатка
-        offer_ids (set): множество id товара
-        warehouse_id (str): id склада
+        watch_remnants (list): Список словарей с данными об остатках.
+        offer_ids (set): Множество артикулов товаров.
+        warehouse_id (str): Идентификатор склада.
+
     Returns:
-        stocks (list): список остатка товара Яндекс.Маркет с указанием количества
+        list: Список словарей с информацией об остатках товаров.
+
+    Notes:
+        Если количество товара больше 10, используется значение 100.
+        Если количество равно 1, используется значение 0.
     """
 
     # Уберем то, что не загружено в market
@@ -180,15 +206,17 @@ def create_stocks(watch_remnants, offer_ids, warehouse_id):
 
 
 def create_prices(watch_remnants, offer_ids):
-    """Укажем цену на часы.
+    """
+    Создает список цен для товаров Яндекс.Маркет.
 
-    Добавим в файл со списком часов цену на него.
+    Преобразует данные о ценах в формат, подходящий для API.
 
     Args:
-        watch_remnants (list): список со словарями остатка
-        offer_ids (set): множество id товара
+        watch_remnants (list): Список словарей с данными об остатках.
+        offer_ids (set): Множество артикулов товаров.
+
     Returns:
-        prices (list): список цен на оставшиеся товары Яндекс.Маркет
+        list: Список словарей с информацией о ценах товаров.
     """
 
     prices = []

@@ -12,17 +12,21 @@ logger = logging.getLogger(__file__)
 
 
 def get_product_list(last_id, client_id, seller_token):
-    """Получить список товаров магазина Озон
+    """
+    Получить список товаров магазина Озон.
 
-    По запросу к API Озон создаст JSON файл всех необходимых товаров.
+    Выполняет запрос к API Озон для получения списка товаров.
 
     Args:
-        last_id (str): id последнего товара
-        client_id (str): id клиента
-        seller_token (str): токен доступа клиента к Озон
+        last_id (str): Идентификатор последнего товара для пагинации.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен доступа для работы с API.
 
     Returns:
-        result (dict): обработанный JSON файл с данными на товар Озон
+        dict: Словарь с данными о товарах. Ключ 'result' содержит список товаров.
+
+    Raises:
+        requests.exceptions.HTTPError: Если произошла ошибка при запросе.
     """
 
     url = "https://api-seller.ozon.ru/v2/product/list"
@@ -44,17 +48,21 @@ def get_product_list(last_id, client_id, seller_token):
 
 
 def get_offer_ids(client_id, seller_token):
-    """Получить артикулы товаров магазина озон
+    """
+    Обновить цены товаров на Озон.
 
-    Имея список товара мы можем получить его артикул на ОЗОН.
+    Отправляет запрос к API для обновления цен на товары.
 
     Args:
-
-        client_id (str): id клиента
-        seller_token (str): токен доступа клиента к Озон
+        prices (list): Список словарей с информацией о ценах товаров.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен доступа для работы с API.
 
     Returns:
-        offer_ids (list): список id товаров
+        dict: Ответ от API с результатами обновления.
+
+    Raises:
+        requests.exceptions.HTTPError: Если произошла ошибка при запросе.
     """
 
     last_id = ""
@@ -73,17 +81,21 @@ def get_offer_ids(client_id, seller_token):
 
 
 def update_price(prices: list, client_id, seller_token):
-    """Обновить цены товаров
+    """
+    Обновить остатки товаров на Озон.
 
-    Имея список товара мы можем получить его текущую цену
+    Отправляет запрос к API для обновления информации об остатках товаров.
 
     Args:
-        prices: list : список с ценами на товар
-        client_id (str): id клиента
-        seller_token (str): токен доступа клиента к Озон
+        stocks (list): Список словарей с информацией об остатках товаров.
+        client_id (str): Идентификатор клиента.
+        seller_token (str): Токен доступа для работы с API.
 
     Returns:
-        response.json() (dict): обновит цены на товар
+        dict: Ответ от API с результатами обновления.
+
+    Raises:
+        requests.exceptions.HTTPError: Если произошла ошибка при запросе.
     """
 
     url = "https://api-seller.ozon.ru/v1/product/import/prices"
@@ -98,17 +110,17 @@ def update_price(prices: list, client_id, seller_token):
 
 
 def update_stocks(stocks: list, client_id, seller_token):
-    """Обновить остатки
+    """
+    Скачать файл с остатками товаров с сайта Casio.
 
-    Через запрос к API Озон получим остаток товара
-
-    Args:
-        stocks: list : список с остатками на товар
-        client_id (str): id клиента
-        seller_token (str): токен доступа клиента к Озон
+    Загружает архив с файлом остатков, извлекает его и преобразует данные в список словарей.
 
     Returns:
-        response.json() (dict): обновит остатки на товар
+        list: Список словарей с данными об остатках товаров.
+
+    Raises:
+        requests.exceptions.HTTPError: Если произошла ошибка при скачивании файла.
+        zipfile.BadZipFile: Если файл не является корректным ZIP-архивом.
     """
 
     url = "https://api-seller.ozon.ru/v1/product/import/stocks"
@@ -123,13 +135,17 @@ def update_stocks(stocks: list, client_id, seller_token):
 
 
 def download_stock():
-    """Скачать файл ostatki с сайта casio
+    """
+    Скачать файл с остатками товаров с сайта Casio.
 
-    Получим файл остатков в формате Excel
+    Загружает архив с файлом остатков, извлекает его и преобразует данные в список словарей.
 
     Returns:
-        watch_remnants (list): список со словарями на товар
+        list: Список словарей с данными об остатках товаров.
 
+    Raises:
+        requests.exceptions.HTTPError: Если произошла ошибка при скачивании файла.
+        zipfile.BadZipFile: Если файл не является корректным ZIP-архивом.
     """
 
     # Скачать остатки с сайта
@@ -152,16 +168,21 @@ def download_stock():
 
 
 def create_stocks(watch_remnants, offer_ids):
-    """Создать остатки товара
+    """
+    Создать список остатков товаров для загрузки на Озон.
 
-    Наполним файл с остатками товара
+    Преобразует данные об остатках в формат, подходящий для API.
 
     Args:
-        watch_remnants (list): список с остатками на товар
-        offer_ids (list): список id товаров
+        watch_remnants (list): Список словарей с данными об остатках.
+        offer_ids (list): Список артикулов товаров.
 
     Returns:
-        stocks (dict): обновленный список с остатками на товар
+        list: Список словарей с информацией об остатках товаров.
+
+    Notes:
+        Если количество товара больше 10, используется значение 100.
+        Если количество равно 1, используется значение 0.
     """
 
     # Уберем то, что не загружено в seller
@@ -184,16 +205,27 @@ def create_stocks(watch_remnants, offer_ids):
 
 
 def create_prices(watch_remnants, offer_ids):
-    """Укажем цену на часы
+    """
+    Создать список цен на товары для загрузки на Озон.
 
-    Добавим в файл со списком часов цену на него
+    Преобразует данные о ценах из списка остатков в формат, подходящий для API.
 
     Args:
-        watch_remnants (list): список с остатками на товар
-        offer_ids (list): список id товаров
+        watch_remnants (List[Dict]): Список словарей с данными об остатках товаров.
+                                     Каждый словарь содержит ключи "Код" и "Цена".
+        offer_ids (List[str]): Список артикулов товаров, которые нужно обработать.
 
     Returns:
-        prices (dict): обновленный список с ценами на товар
+        List[Dict]: Список словарей с информацией о ценах товаров.
+                    Каждый словарь содержит следующие ключи:
+                    - auto_action_enabled: str (например, "UNKNOWN"),
+                    - currency_code: str (например, "RUB"),
+                    - offer_id: str (артикул товара),
+                    - old_price: str (старая цена, всегда "0"),
+                    - price: str (новая цена в рублях).
+
+    Notes:
+        Если цена товара не может быть преобразована, она будет пропущена.
     """
     prices = []
     for watch in watch_remnants:
@@ -210,15 +242,14 @@ def create_prices(watch_remnants, offer_ids):
 
 
 def price_conversion(price: str) -> str:
-    """Конверсия цены
-
-    Преобразовывает цену на товар в целое число без разделения на разряды.
+    """
+    Конвертировать цену в целочисленное значение без разделителей.
 
     Args:
-        price: str (dict): обновленный список с ценами на товар (только цифры, без указания разрядности)
+        price (str): Строка с ценой (например, "5'990.00 руб.").
 
     Returns:
-        5'990.00 руб. -> 5990
+        str: Целочисленное значение цены (например, "5990").
     """
 
     return re.sub("[^0-9]", "", price.split(".")[0])
